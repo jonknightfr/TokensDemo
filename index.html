@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ForgeRock Demonstration</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+      crossorigin="anonymous"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      body {
+        font-family: "Open Sans";
+      }
+    </style>
+
+    <script>
+      // START OF CONFIG
+
+      var CONFIGS = [
+        {
+          name: "PingOne",
+          app: "https://tokens-forgerock.glitch.me",
+          scope: "openid profile email",
+          logo: "https://seeklogo.com/images/P/ping-identity-logo-81DE025A62-seeklogo.com.png",
+          client: {
+            id: "480bcd5e-4461-4454-aed2-d99e5bff1c38",
+            secret:
+              "1y8dv6a2cA1Lz~JQ~z8PcNZWls9KQh6.1btq8G5j6PRAzL4v_nMU-8V5TXxTzBde",
+          },
+          well_known_endpoint:
+            "https://auth.pingone.eu/02002835-ad9a-4bd1-af75-4a3862c56fae/as/.well-known/openid-configuration",
+        },
+        {
+          name: "Identity Cloud",
+          app: "https://tokens-forgerock.glitch.me/index.html",
+          scope: "openid profile email fr:idm:*",
+          journey: encodeURI("Login"),
+          //"acr_values": "push",
+          logo: "https://i.ibb.co/T4kv1bw/Realistic-Green-leaf-on-transparent-PNG.png",
+          client: {
+            id: "ForgeRockSDKClient",
+            secret: "secret",
+          },
+          ciba_client: {
+            id: "CIBA",
+            secret: "secret",
+          },
+          ciba_mesg:
+            "Allow ForgeBank to transfer £500 to account ending in 5430",
+          ciba_acr: "unity",
+          well_known_endpoint:
+            "https://openam-jonknight.forgeblocks.com/am/oauth2/alpha/.well-known/openid-configuration",
+        },
+      ];
+
+      var CONFIG;
+
+      var jwk = {
+        p: "7aIjIeRDFQ-retGSNs2YTBeO2yXH0aBVdjt2vBml6K-27s0cwhae6hpMa_XIJa4hlm1UHgT4Kva3XcXs1dI4DVK25XyG5FSs6JChx5XPd0FRIWfbYYITDUOtzvSwKlhtqMeR5pTrDbRe1BtqnEyyrVCP78lRhm-TdgS3UtfZoQs",
+        kty: "RSA",
+        q: "wbXL6idfKwG0OfIrXxSx5TfWEXIrlbwK3cRQlGVceESvjkASk2B9WQNX652ytFaGDJuYDKTeSfBxSa-eDkrLNhHMvVB8D-NwRs2vb5olyBm53Lc7cAJ5jJ1FcFOl7hUm4tB4wGAWLISSfGIDtULc6AWtG05OIPSR9FP4M-em38k",
+        d: "TE6j17UDQkpqbeetRBxZvcECPqPWjiDBlXtRZXw-IKzG0W4x1M2pfJkfknT6P4CE7qQk3e-o-58NE9Ktn-b6G6_fglM66CoK0sqDIHIW971MDDn1j1M3JZaLRpwvMSKfxqy3zK7dp4qAwMYRiiU_22oKgfDqrcNn56oRygWgi1gG6-6o2eqMGxce1svd8-g9hrMK4Xjoqy_OZ8kQdPviu4jkv26dpQ1aEGBQnK71Lp-1KIejz7r6-x3_lxPTYa005lMYgSBTVcZCc3BcMoeM48SRuhj2p1crFojeJIAyxQB00f9KOXFPPUhE1EbYfgz780-8pGEP85aQY9p0CEx5QQ",
+        e: "AQAB",
+        use: "sig",
+        qi: "kWSq_Lj26Jn5AONxntQuBV0OPrPDSZs6DbdsRzClQceOTkIZRz5jiVySaKpAew3FHad-MxsGYhhKqk_TonjMGSsA2b35gBuGEynTeSyYl9jv9rlLaSRPskWrXMMxGLSKZUji_ptM6YlDNPEQk0Ro6qI5nmR0reywSEC1yn4quUk",
+        dp: "I5Ed8weoJrHWt6ZAXSV-gv0Pq6tG8hAuWmjiB5tLIr2SAsH-aOpb1Kwk_g-makVaz5oDeg7CWiPdJBLotMQnEY9swoJV6jzmOFTVcfrxN2c2TmquAjUmxth3Xj9vUpczqoxcQQfO-pkhjFuiJEyyfZBOStR1-Eog5wwjqCmYcCs",
+        alg: "RS256",
+        dq: "wQfDQvum9zlEenXbSG1b9LnWZR4rVpPDFEjbr3TuV57CfnNUz23Ymwoc49sKyHBsNkYal4b3SCEFE1OgokdgBupn5sM8TazsJnIy_3hRa_xO3SXuYejlbP0PxCZm9EA5ts3ddn6JuiUFwFL_tPIDJmb5oHtAmdB9XUcLz9Vo0hk",
+        n: "s8_9aFCo_buPjw9PFaCetSxK9aLli6WSHfEdbOy0FqIlBeZ6VtBN2vwGcHxqqwLgN8DZ_ElCVy_Vds--fJAgbMfOrunrj2FprVq9ILTGLLyxjbJUQLv7XkVyqfMquMXMUY7OMoC9TokdhZqfbTrRW11Q7V1N2_lHDSmU5To74EYwPsOukXbJO3y8qVRmynOXB8AaCFHAuHbNWYAu3Nz35-Dpvj1okjMeUCRoCxAYQZkN_sSW-mLCuFWidjMsxTSpJ7CUqh13t8dmUUXC-jy-coKFDKryXOAgzEH4wCpr-wfEgFTYAZestycD8vP6MsqfPmn2LiweufTs0S6yZ0oGow",
+      };
+
+      // END OF CONFIG
+
+      var code;
+      var response;
+
+      $(document).ready(function () {
+        code = getParameterByName("code");
+        if (code) {
+          getWellKnownEndpoint();
+          var xmlhttp = new XMLHttpRequest();
+          var payload = `grant_type=authorization_code&code=${code}&redirect_uri=${CONFIG.app}`;
+          xmlhttp.open("POST", CONFIG.wellKnownEndpoint.token_endpoint, false);
+          xmlhttp.setRequestHeader(
+            "Content-type",
+            "application/x-www-form-urlencoded"
+          );
+          xmlhttp.setRequestHeader("Accept", "application/json");
+          xmlhttp.setRequestHeader(
+            "Authorization",
+            "Basic " + btoa(CONFIG.client.id + ":" + CONFIG.client.secret)
+          );
+          xmlhttp.send(payload);
+          response = JSON.parse(xmlhttp.responseText);
+          console.log(xmlhttp.responseText);
+          document.getElementById("logo").src = CONFIG.logo;
+          responseInfo();
+          oidcInfo(response.id_token, "oidcInfo");
+          userInfo();
+          introspect(response.access_token, CONFIG.client, "introspect");
+        }
+      });
+
+      function login(option) {
+        sessionStorage.setItem("savedConfig", option);
+        CONFIG = CONFIGS[option];
+        console.log("LOGGING IN " + CONFIG.name);
+        getWellKnownEndpoint();
+        var acr = "";
+        if (CONFIG.acr_values) acr = `&acr_values=${CONFIG.acr_values}`;
+        //else if (CONFIG.journey) acr = `&service=${CONFIG.journey}`;
+        var location = `${CONFIG.wellKnownEndpoint.authorization_endpoint}?scope=${CONFIG.scope}&response_type=code&client_id=${CONFIG.client.id}${acr}&redirect_uri=${CONFIG.app}&decision=allow`;
+
+        console.log(location);
+        window.location.href = location;
+      }
+
+      function getWellKnownEndpoint() {
+        var savedConfig = sessionStorage.getItem("savedConfig");
+        CONFIG = savedConfig ? CONFIGS[savedConfig] : CONFIG[0];
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", CONFIG.well_known_endpoint, false);
+        xmlhttp.send(null);
+        CONFIG["wellKnownEndpoint"] = JSON.parse(xmlhttp.responseText);
+        console.log(
+          "GOT well-known issuer: " + CONFIG.wellKnownEndpoint.issuer
+        );
+        //document.getElementById("loginButton").href = `${CONFIG.wellKnownEndpoint.authorization_endpoint}?scope=${CONFIG.scope}&response_type=code&client_id=${CONFIG.client.id}&redirect_uri=${CONFIG.app}&decision=allow`;
+      }
+
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return "";
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+
+      function syntaxHighlight(json) {
+        json = json
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        return json.replace(
+          /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+          function (match) {
+            var cls = "number";
+            if (/^"/.test(match)) {
+              if (/:$/.test(match)) {
+                cls = "key";
+              } else {
+                cls = "string";
+              }
+            } else if (/true|false/.test(match)) {
+              cls = "boolean";
+            } else if (/null/.test(match)) {
+              cls = "null";
+            }
+            return '<span class="' + cls + '">' + match + "</span>";
+          }
+        );
+      }
+
+      function isJson(json) {
+        if (typeof json === "number") {
+          var now = Number(Date.now() / 1000);
+          if (Math.abs(now - json) < 20000) {
+            json =
+              json +
+              " (" +
+              moment.unix(json).format("YYYY-MM-DD HH:mm:ss") +
+              ")";
+          }
+        }
+
+        if (typeof json === "object") {
+          try {
+            var str = syntaxHighlight(JSON.stringify(json, null, 2));
+            return '<pre style="white-space:pre-wrap;">' + str + "</pre>";
+          } catch (e) {
+            return json;
+          }
+        } else
+          try {
+            var json = JSON.parse(json);
+            return isJson(json);
+          } catch (e) {
+            return (
+              '<pre style="white-space:pre-wrap;">' +
+              decodeURIComponent(escape(json)) +
+              "</pre>"
+            );
+          }
+      }
+
+      function responseInfo() {
+        var doc = '<table class="table table-bordered table-striped"><tbody>';
+        for (var key in response) {
+          if (response.hasOwnProperty(key)) {
+            doc =
+              doc +
+              "<tr><td>" +
+              key +
+              '</td><td style="max-width: 300px; word-wrap: break-word;">' +
+              isJson(response[key]) +
+              "</td></tr>";
+          }
+        }
+        doc = doc + "</tbody></table>";
+        document.getElementById("responseInfo").innerHTML = doc;
+      }
+
+      function JWTclaims(jwt) {
+        var parts = jwt.split(".");
+        return JSON.parse(atob(parts[1]));
+      }
+
+      function JWTkid(jwt) {
+        var parts = jwt.split(".");
+        return JSON.parse(atob(parts[0]))["kid"];
+      }
+
+      function oidcInfo(id_token, target, showPersona = true) {
+        if (id_token) {
+          var doc = '<table class="table table-bordered table-striped"><tbody>';
+          id_token = JWTclaims(id_token);
+          var keys = Object.keys(id_token).sort();
+          for (var key in keys) {
+            console.log(keys[key]);
+            var value =
+              keys[key] == "labeledURI"
+                ? `<img width="100px" src="${id_token[keys[key]]}"></img>`
+                : isJson(id_token[keys[key]]);
+            doc =
+              doc +
+              "<tr><td>" +
+              keys[key] +
+              '</td><td style="max-width: 300px; word-wrap: break-word;">' +
+              value +
+              "</td></tr>";
+          }
+          doc = doc + "</tbody></table>";
+          document.getElementById(target).innerHTML = doc;
+          if (showPersona && id_token.hasOwnProperty("family_name"))
+            document.getElementById(
+              "persona"
+            ).innerHTML = `Persona: <b>${id_token.given_name} ${id_token.family_name}</b>`;
+        }
+      }
+
+      function userInfo() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", CONFIG.wellKnownEndpoint.userinfo_endpoint, false);
+        xmlhttp.setRequestHeader(
+          "Authorization",
+          `Bearer ${response.access_token}`
+        );
+        xmlhttp.send(null);
+        var introspect = JSON.parse(xmlhttp.responseText);
+        var doc = '<table class="table table-bordered table-striped"><tbody>';
+        var keys = Object.keys(introspect).sort();
+        for (var key in keys) {
+          doc =
+            doc +
+            '<tr><td style="max-width: 200px; word-wrap: break-word;">' +
+            keys[key] +
+            '</td><td style="max-width: 300px; word-wrap: break-word;">' +
+            isJson(introspect[keys[key]]) +
+            "</td></tr>";
+        }
+        doc = doc + "</tbody></table>";
+        document.getElementById("userInfo").innerHTML = doc;
+      }
+
+      function introspect(token, client, target) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "POST",
+          CONFIG.wellKnownEndpoint.introspection_endpoint,
+          false
+        );
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.setRequestHeader(
+          "Authorization",
+          "Basic " + btoa(client.id + ":" + client.secret)
+        );
+        xmlhttp.send("token=" + token);
+        var introspect = JSON.parse(xmlhttp.responseText);
+        var keys = Object.keys(introspect).sort();
+        var doc = '<table class="table table-bordered table-striped"><tbody>';
+        for (var key in keys) {
+          doc =
+            doc +
+            '<tr><td style="max-width: 200px; word-wrap: break-word;">' +
+            keys[key] +
+            '</td><td style="max-width: 300px; word-wrap: break-word;">' +
+            isJson(introspect[keys[key]]) +
+            "</td></tr>";
+        }
+        doc = doc + "</tbody></table>";
+        document.getElementById(target).innerHTML = doc;
+      }
+
+      function stageTransaction() {
+        if (
+          CONFIG &&
+          document.getElementById("transactionDescription").value != "" &&
+          document.getElementById("transactionAmount").value != ""
+        ) {
+          var tx = {
+            date: new Date().toLocaleString(),
+            description: document.getElementById("transactionDescription")
+              .value,
+            amount: document.getElementById("transactionAmount").value,
+          };
+          var patch = [
+            {
+              operation: "add",
+              field: "/frUnindexedMultivalued1/-",
+              value: JSON.stringify(tx),
+            },
+          ];
+          var baseUrl = new URL(CONFIG.well_known_endpoint).origin;
+          var xmlhttp = new XMLHttpRequest();
+          console.log(response);
+          var claims = JWTclaims(response.id_token);
+          console.log(`${baseUrl}/openidm/managed/alpha_user/${claims.sub}`);
+
+          xmlhttp.open(
+            "PATCH",
+            `${baseUrl}/openidm/managed/alpha_user/${claims.sub}`,
+            false
+          );
+          xmlhttp.setRequestHeader("Content-type", "application/json");
+          xmlhttp.setRequestHeader(
+            "Authorization",
+            `Bearer ${response.access_token}`
+          );
+          xmlhttp.send(JSON.stringify(patch));
+
+          refreshTransactions();
+        }
+      }
+
+      async function clipboard(text) {
+        try {
+          await navigator.clipboard.writeText(decodeURI(text));
+          console.log("Content copied to clipboard");
+        } catch (err) {
+          console.error("Failed to copy: ", err);
+        }
+      }
+
+      function refreshTransactions() {
+        if (CONFIG) {
+          var claims = JWTclaims(response.id_token);
+          var baseUrl = new URL(CONFIG.well_known_endpoint).origin;
+
+          var xmlhttp2 = new XMLHttpRequest();
+          xmlhttp2.withCredentials = true;
+          xmlhttp2.open(
+            "GET",
+            `${baseUrl}/am/json/alpha/users/${claims.sub}/devices/2fa/binding?_queryFilter=true`,
+            false
+          );
+          xmlhttp2.send(null);
+          var bindings;
+          try {
+            bindings = JSON.parse(xmlhttp2.responseText);
+          } catch (e) {
+            console.log("No device bindings: " + e);
+          }
+
+          console.log(`${baseUrl}/openidm/managed/alpha_user/${claims.sub}`);
+          var xmlhttp = new XMLHttpRequest();
+          xmlhttp.open(
+            "GET",
+            `${baseUrl}/openidm/managed/alpha_user/${claims.sub}`,
+            false
+          );
+          xmlhttp.setRequestHeader(
+            "Authorization",
+            `Bearer ${response.access_token}`
+          );
+          xmlhttp.send(null);
+          var userObj = JSON.parse(xmlhttp.responseText);
+          var txList = "";
+          for (var i = 0; i < userObj["frUnindexedMultivalued1"].length; i++) {
+            try {
+              var trans = JSON.parse(userObj["frUnindexedMultivalued1"][i]);
+              txList += `<pre style="white-space:pre-wrap;">${isJson(
+                userObj["frUnindexedMultivalued1"][i]
+              )}<span class="badge-unsigned">UnSigned</span></pre>`;
+            } catch (e) {
+              var claims = JWTclaims(userObj["frUnindexedMultivalued1"][i]);
+              var kid = JWTkid(userObj["frUnindexedMultivalued1"][i]);
+
+              var deviceBinding = `<button class="btn btn-xsm btn-info" onclick="clipboard('no key available')">[ Unavailable ]</button>`;
+              for (var j = 0; j < bindings.result.length; j++) {
+                console.log("KID : " + JSON.stringify(bindings.result[j]));
+                if (bindings.result[j].key.kid == kid) {
+                  var key = encodeURI(JSON.stringify(bindings.result[j].key));
+                  console.log(key);
+                  deviceBinding = `<button class="btn btn-xsm btn-info" onclick="clipboard('${key}')">${bindings.result[j].deviceName}</button>`;
+                }
+              }
+              txList += `<pre style="white-space:pre-wrap;">${isJson(
+                claims.challenge
+              )}<button class="btn btn-xsm btn-success" onclick="clipboard('${
+                userObj["frUnindexedMultivalued1"][i]
+              }')">Signed</button>${deviceBinding}</pre>`;
+            }
+          }
+          document.getElementById("recentTransactionsList").innerHTML = txList;
+        }
+      }
+
+      function caveat() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "POST",
+          CONFIG.wellKnownEndpoint.issuer + "/token/macaroon?_action=restrict",
+          false
+        );
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        var epoch = Math.round(Date.now() / 1000);
+        var expires =
+          epoch + Number(document.getElementById("caveatExpiry").value);
+        var scopes = document.getElementById("caveatScopes").value;
+        var tx;
+        try {
+          tx = JSON.parse(document.getElementById("caveatTx").value);
+        } catch (e) {
+          tx = document.getElementById("caveatTx").value;
+        }
+        var data = {
+          macaroon: response.access_token,
+          caveat: {
+            type: "first-party",
+            identifier: {
+              scope: scopes,
+              exp: expires,
+              tx: tx,
+            },
+          },
+        };
+
+        xmlhttp.send(JSON.stringify(data));
+        response.macaroon = JSON.parse(xmlhttp.responseText);
+        introspect(response.macaroon.macaroon, "caveatInfo");
+      }
+
+      function revoke() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "POST",
+          CONFIG.wellKnownEndpoint.revocation_endpoint,
+          false
+        );
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.setRequestHeader(
+          "Authorization",
+          "Basic " + btoa(CONFIG.client.id + ":" + CONFIG.client.secret)
+        );
+        var data = `token=${response.access_token}&token_type_hint=access_token`;
+        xmlhttp.send(data);
+
+        document.getElementById("responseInfo").style.borderColor = "red";
+        document.getElementById("responseInfo").style.borderWidth = "4px";
+      }
+
+      function logout() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "GET",
+          `${CONFIG.wellKnownEndpoint.end_session_endpoint}?id_token_hint=${response.id_token}&post_logout_redirect_uri=${CONFIG.app}`,
+          false
+        );
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.send(null);
+        window.location.href = CONFIG.app;
+      }
+
+      // CIBA Helper functions
+
+      function arrayBufferToBase64(arrayBuffer) {
+        const byteArray = new Uint8Array(arrayBuffer);
+        let byteString = "";
+        byteArray.forEach((byte) => {
+          byteString += String.fromCharCode(byte);
+        });
+        return btoa(byteString);
+      }
+
+      function base64ToUint8Array(base64Contents) {
+        base64Contents = base64Contents
+          .replace(/-/g, "+")
+          .replace(/_/g, "/")
+          .replace(/\s/g, "");
+        const content = atob(base64Contents);
+        return new Uint8Array(content.split("").map((c) => c.charCodeAt(0)));
+      }
+
+      function stringToUint8Array(contents) {
+        const encoded = btoa(unescape(encodeURIComponent(contents)));
+        return base64ToUint8Array(encoded);
+      }
+
+      function uint8ArrayToString(unsignedArray) {
+        const base64string = btoa(String.fromCharCode(...unsignedArray));
+        return base64string
+          .replace(/=/g, "")
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_");
+      }
+
+      function initCIBA(requestJWT) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open(
+          "POST",
+          CONFIG.wellKnownEndpoint.issuer + "/bc-authorize",
+          false
+        );
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.setRequestHeader(
+          "Authorization",
+          "Basic " +
+            btoa(CONFIG.ciba_client.id + ":" + CONFIG.ciba_client.secret)
+        );
+        xmlhttp.send("request=" + requestJWT);
+        var json = JSON.parse(xmlhttp.responseText);
+        console.log(json);
+        if (json.hasOwnProperty("auth_req_id"))
+          setTimeout(function () {
+            pollCIBA(json.auth_req_id);
+          }, 4000);
+      }
+
+      function signJWT(jwk, header, payload) {
+        const stringifiedHeader = JSON.stringify(header);
+        const stringifiedPayload = JSON.stringify(payload);
+
+        const headerBase64 = uint8ArrayToString(
+          stringToUint8Array(stringifiedHeader)
+        );
+        const payloadBase64 = uint8ArrayToString(
+          stringToUint8Array(stringifiedPayload)
+        );
+        const headerAndPayload = `${headerBase64}.${payloadBase64}`;
+
+        const messageAsUint8Array = stringToUint8Array(headerAndPayload);
+
+        window.crypto.subtle
+          .importKey(
+            "jwk",
+            jwk,
+            {
+              name: "RSASSA-PKCS1-v1_5",
+              hash: { name: "SHA-256" },
+            },
+            false,
+            ["sign"]
+          )
+          .then(function (privateKey) {
+            window.crypto.subtle
+              .sign(
+                {
+                  name: "RSASSA-PKCS1-v1_5",
+                },
+                privateKey,
+                messageAsUint8Array
+              )
+              .then(function (signature) {
+                const base64Signature = uint8ArrayToString(
+                  new Uint8Array(signature)
+                );
+                console.log(
+                  `Signed JWT: ${headerAndPayload}.${base64Signature}`
+                );
+                initCIBA(`${headerAndPayload}.${base64Signature}`);
+              })
+              .catch(function (err) {
+                console.error(err);
+              });
+          })
+          .catch(function (err) {
+            console.error(err);
+          });
+      }
+
+      function startCIBA() {
+        // Set headers for JWT
+        var header = {
+          typ: "JWT",
+          alg: "RS256",
+        };
+
+        // Prepare timestamp in seconds
+        var currentTimestamp = Math.floor(Date.now() / 1000);
+
+        var payload = {
+          iss: CONFIG.ciba_client.id,
+          iat: currentTimestamp,
+          exp: currentTimestamp + 300,
+          jti: "jwt_nonce",
+          login_hint: "",
+          scope: "openid profile fr:idm:*",
+          acr_values: CONFIG.ciba_acr,
+          aud: CONFIG.wellKnownEndpoint.issuer,
+          binding_message: CONFIG.ciba_mesg,
+        };
+
+        if (document.getElementById("cibaTx").value != "")
+          payload.binding_message = document.getElementById("cibaTx").value;
+        if (document.getElementById("cibaUser").value != "") {
+          payload.login_hint = document.getElementById("cibaUser").value;
+          console.log("CIBA REQUEST " + JSON.stringify(payload));
+          signJWT(jwk, header, payload);
+        }
+      }
+
+      function pollCIBA(auth_req_id) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST", CONFIG.wellKnownEndpoint.token_endpoint, false);
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.setRequestHeader(
+          "Authorization",
+          "Basic " +
+            btoa(CONFIG.ciba_client.id + ":" + CONFIG.ciba_client.secret)
+        );
+        xmlhttp.send(
+          `auth_req_id=${auth_req_id}&grant_type=urn:openid:params:grant-type:ciba`
+        );
+        var json = JSON.parse(xmlhttp.responseText);
+        console.log(json);
+        //if (json.hasOwnProperty("access_token")) introspect(json.access_token, CONFIG.ciba_client, "cibaResponse");
+        if (json.hasOwnProperty("access_token")) {
+          console.log(JSON.stringify(json));
+          oidcInfo(json.id_token, "cibaResponse", false);
+        } else if (json.hasOwnProperty("error")) {
+          if (json.error == "unknown_auth_req_id")
+            document.getElementById("cibaResponse").innerHTML = "Expired.";
+          else if (json.error == "access_denied")
+            document.getElementById("cibaResponse").innerHTML = "Rejected.";
+          else if (json.error == "authorization_pending") {
+            document.getElementById("cibaResponse").innerHTML =
+              "Pending Authorization.";
+            setTimeout(function () {
+              pollCIBA(auth_req_id);
+            }, 4000);
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <nav role="navigation" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header" style="min-width: 768px">
+          <div class="col-md-4">
+            <img src="logo.png" height="20px" />
+          </div>
+          <div class="col-md-8">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <script>
+                for (var i = 0; i < CONFIGS.length; i++) {
+                  document.write(
+                    `<a class="btn btn-danger" style="margin-right:10px;" onclick="login(${i});" href="#">${CONFIGS[i].name}</a>`
+                  );
+                }
+              </script>
+              <button class="btn btn-primary" onclick="logout()">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="jumbotron">
+      <div class="container">
+        <br />
+        <div class="col-sm-8">
+          <h1 style="font-size: 36pt">OpenID Connect Demo</h1>
+          <p>
+            An example of user and session information available to protected
+            applications.
+          </p>
+          <p id="persona">Persona: unknown</p>
+        </div>
+        <div class="col-sm-4">
+          <br />
+          <img width="100" id="logo" src="" />
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-4">
+          <h2 class="page-header">
+            Access Token Response
+            <button class="btn btn-primary" onclick="revoke()">Revoke</button>
+          </h2>
+          <div class="well" id="responseInfo"></div>
+        </div>
+        <div class="col-sm-4">
+          <h2 class="page-header">OIDC Token Data</h2>
+          <div class="well" id="oidcInfo"></div>
+        </div>
+        <div class="col-sm-4">
+          <div class="row">
+            <h2 class="page-header">
+              Authorization
+              <button class="btn btn-danger" onclick="startCIBA()">
+                Request
+              </button>
+            </h2>
+            <div class="well">
+              <div class="input-group mb-3">
+                <label for="cibaTx" class="form-label"
+                  >Transaction Details</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cibaTx"
+                  placeholder="Allow ForgeBank to transfer £500 to account ending in 5430"
+                />
+              </div>
+              <div class="input-group mb-3">
+                <label for="cibaUser" class="form-label">User</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cibaUser"
+                  placeholder="Username"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <h2 class="page-header">
+              CIBA
+              <button class="btn btn-danger" onclick="startCIBA()">
+                Request
+              </button>
+            </h2>
+            <div class="well">
+              <div class="input-group mb-3">
+                <label for="cibaTx" class="form-label"
+                  >Transaction Details</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cibaTx"
+                  placeholder="Allow ForgeBank to transfer £500 to account ending in 5430"
+                />
+              </div>
+              <div class="input-group mb-3">
+                <label for="cibaUser" class="form-label">User</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cibaUser"
+                  placeholder="Username"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="well" id="cibaResponse"></div>
+          </div>
+          <div class="row">
+            <h2 class="page-header">Transaction Signing</h2>
+            <div class="well">
+              <div class="input-group mb-3">
+                <label for="transactionDescription" class="form-label"
+                  >Transaction Details</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="transactionDescription"
+                  placeholder="Purchase Samsung QLED TV"
+                />
+              </div>
+              <div class="input-group mb-3">
+                <label for="transactionAmount" class="form-label">Amount</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="transactionAmount"
+                  placeholder="499.99"
+                />
+              </div>
+              <button
+                class="btn btn-sm btn-danger"
+                onclick="stageTransaction()"
+              >
+                Stage Transaction
+              </button>
+              <hr />
+              <div class="input-group mb-3">
+                <button
+                  class="btn btn-sm btn-danger"
+                  onclick="refreshTransactions()"
+                >
+                  Recent Transactions
+                </button>
+                <hr />
+                <div id="recentTransactionsList"></div>
+              </div>
+            </div>
+            <div class="row">
+              <h2 class="page-header">
+                Macaroon Caveats
+                <button class="btn btn-danger" onclick="caveat()">
+                  Request
+                </button>
+              </h2>
+              <div class="well">
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="caveatScopes"
+                    placeholder="Scopes"
+                  />
+                </div>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="caveatExpiry"
+                    placeholder="Expiry (seconds from now)"
+                  />
+                </div>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="caveatTx"
+                    placeholder="Transaction details"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <h2 class="page-header">
+                Introspect
+                <button
+                  class="btn btn-danger"
+                  onclick="introspect(response.macaroon.macaroon, CONFIG.client, 'caveatInfo');"
+                >
+                  Refresh
+                </button>
+              </h2>
+              <div class="well" id="caveatInfo"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <h2 class="page-header">UserInfo Endpoint</h2>
+            <div class="well" id="userInfo"></div>
+          </div>
+          <div class="col-sm-4">
+            <h2 class="page-header">
+              Introspect Endpoint
+              <button
+                class="btn btn-danger"
+                onclick="introspect(response.access_token, CONFIG.client, 'introspect')"
+              >
+                Refresh
+              </button>
+            </h2>
+            <div class="well" id="introspect"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
