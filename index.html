@@ -145,21 +145,18 @@
       function getWellKnownEndpoint() {
         var savedConfig = sessionStorage.getItem("savedConfig");
         CONFIG = savedConfig ? CONFIGS[savedConfig] : CONFIG[0];
-        //try {
+        try {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.open("GET", CONFIG.well_known_endpoint, false);
             xmlhttp.send(null);
-            if (xmlhttp.status != "200") {
-                document.getElementById("responseInfo").innerHTML = "ERROR: " + xmlhttp.responseText;
-            }
             CONFIG["wellKnownEndpoint"] = JSON.parse(xmlhttp.responseText);
             console.log(
               "GOT well-known issuer: " + CONFIG.wellKnownEndpoint.issuer
             );
-        //} catch (e) { 
-        //    console.log("ERROR: " + e);
-        //    document.getElementById("responseInfo").innerHTML = "ERROR: " + e;
-        //}
+        } catch (e) { 
+            console.log("ERROR: " + e);
+            document.getElementById("responseInfo").innerHTML = "Something went wrong. Check the browser console for more info. ERROR: " + e;
+        }
         //document.getElementById("loginButton").href = `${CONFIG.wellKnownEndpoint.authorization_endpoint}?scope=${CONFIG.scope}&response_type=code&client_id=${CONFIG.client.id}&redirect_uri=${CONFIG.app}&decision=allow`;
       }
 
