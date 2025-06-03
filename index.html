@@ -149,7 +149,10 @@
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.open("GET", CONFIG.well_known_endpoint, false);
             xmlhttp.send(null);
-            CONFIG["wellKnownEndpoint"] = JSON.parse(xmlhttp.responseText);
+
+            var replaced = xmlhttp.responseText.replace(/openam-pc-jonk.forgeblocks.com/g, "app.example.com");
+          
+            CONFIG["wellKnownEndpoint"] = JSON.parse(replaced);
             console.log(
               "GOT well-known issuer: " + CONFIG.wellKnownEndpoint.issuer
             );
