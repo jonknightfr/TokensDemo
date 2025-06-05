@@ -46,7 +46,7 @@
       var CONFIGS = [
         {
           name: "PingOne",
-          app: "https://tokens-forgerock.glitch.me",
+          app: "https://jonknightfr.github.io/TokensDemo/",
           scope: "openid profile email",
           logo: "https://seeklogo.com/images/P/ping-identity-logo-81DE025A62-seeklogo.com.png",
           client: {
@@ -76,7 +76,7 @@
             "Allow ForgeBank to transfer £500 to account ending in 5430",
           ciba_acr: "unity",
           well_known_endpoint:
-            "https://app.example.com/am/oauth2/alpha/.well-known/openid-configuration",
+            "https://openam-jonknight.forgeblocks.com/am/oauth2/alpha/.well-known/openid-configuration",
         },
       ];
 
@@ -150,9 +150,7 @@
             xmlhttp.open("GET", CONFIG.well_known_endpoint, false);
             xmlhttp.send(null);
 
-            var replaced = xmlhttp.responseText.replace(/openam-pc-jonk.forgeblocks.com/g, "app.example.com");
-          
-            CONFIG["wellKnownEndpoint"] = JSON.parse(replaced);
+            CONFIG["wellKnownEndpoint"] = JSON.parse(xmlhttp.responseText);
             console.log(
               "GOT well-known issuer: " + CONFIG.wellKnownEndpoint.issuer
             );
