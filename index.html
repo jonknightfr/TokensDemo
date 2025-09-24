@@ -344,12 +344,13 @@
           CONFIG &&
           document.getElementById("transactionDescription").value != "" &&
           document.getElementById("transactionAmount").value != ""
+          document.getElementById("transactionVendor").value != ""
         ) {
           var tx = {
             date: new Date().toLocaleString(),
-            description: document.getElementById("transactionDescription")
-              .value,
+            description: document.getElementById("transactionDescription").value,
             amount: document.getElementById("transactionAmount").value,
+            vendor: document.getElementById("transactionVendor").value,
           };
           var patch = [
             {
@@ -812,6 +813,19 @@
                   id="transactionAmount"
                   placeholder="499.99"
                 />
+              </div>
+              <div class="input-group mb-3">
+                <label for="transactionVendor" class="form-label">Vendor</label>
+                <input list="vendors" id="transactionVendor" name="transactionVendor" class="form-control"/>
+                <datalist id="vendors">
+                  <option value="Alibaba"></option>
+                  <option value="Amazon"></option>
+                  <option value="Ebay"></option>
+                  <option value="Ping Identity"></option>                  
+                  <option value="Shein"></option>
+                  <option value="Temu"></option>
+                  <option value="Walmart"></option>
+                </datalist>
               </div>
               <button
                 class="btn btn-sm btn-danger"
