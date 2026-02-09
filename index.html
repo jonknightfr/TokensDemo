@@ -263,7 +263,7 @@
           for (var key in keys) {
             console.log(keys[key]);
             var value =
-              keys[key] == "labeledURI"
+              (keys[key] == "labeledURI" || keys[key] == "picture")
                 ? `<img width="100px" src="${id_token[keys[key]]}"></img>`
                 : isJson(id_token[keys[key]]);
             doc =
